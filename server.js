@@ -31,8 +31,12 @@ app.get('/location', (request, response) => {
 app.get('/weather', (request, response) => {
     try {
         const darksky = require('./data/darksky.json');
-        const weather = request.query.weather;
-        const weatherData = new Weather(weather, darksky);
+        // const weather = request.query.weather;
+        const weatherData =[];
+        darksky.data.forEach(day => {
+             weatherData.push(new Weather(day));
+         });
+         console.log(weatherData);
         response.status(200).json(weatherData);
     } catch (error) {
         errorHandler(error, request, response);
@@ -57,19 +61,20 @@ function Location(city, geoData) {
     this.longitude = geoData[0].lon;
 }
 
-function Weather(weather, darksky) {
-    this.search_query = weather;
-    this.description = darksky.data[0].weather.description;
-    let d = (new Date(darksky.data[0].valid_date)).toUTCString();
-    let  a = d.split(" ");
-    let date = `${a[0]} ${a[1]} ${a[2]} ${a[3]}`;
+function Weather(darksky) {
+    // this.search_query = weather;
+    this.forcast = darksky.weather.description;
+    let s =(new Date(darksky.valid_date)).toDateString()
+    // let d = (new Date(darksky.data[0].valid_date)).toUTCString();
+    // let  a = d.split(" ");
+    // let date = `${a[0]} ${a[1]} ${a[2]} ${a[3]}`;
     // "time": "Mon Jan 01 2001"
     // console.log(d);
     // let a = d.split(" ");
     // console.log(a);
     // let date = `${a[0]} ${a[1]} ${a[2]} ${a[3]}`;
     // console.loge(date);
-    this.valid_date = date;
+    this.time = s;
 }
 
 function notFoundHandler(request, response) {
